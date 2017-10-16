@@ -1,0 +1,8 @@
+svg {
+  width: 450px;
+  height: 450px;
+}
+
+circle:hover {
+  stroke-width: 1px;
+}
