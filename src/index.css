@@ -3,7 +3,6 @@
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   -webkit-appearance: none;
-  font-family: "Comic Sans MS";
 }
 
 body {
@@ -18,21 +17,63 @@ ul {
   max-width: 500px;
   margin: 0 auto;
   position: relative;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  align-items: left;
 }
 
 li {
   position: relative;
+  width: 100%;
 }
 
 input {
   width: 100%;
   padding: 10px;
+  line-height: 24px;
   margin: 4px;
   border: 1px solid grey;
-  font-family: "Comic Sans MS";
+}
+
+.color-button {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+.color-picker-container {
+  position: absolute;
+  z-index: 2;
+  right: 0;
+}
+
+.step-two {
+  display: flex;
+  justify-content: center;
+}
+
+.left {
+  flex: 0 0 auto;
+}
+
+.right {
+  flex: 0 0 auto;
+  margin: 0 0 0 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 300px;
+  text-align: left;
+}
+
+.right li {
+  line-height: 35px;
+  font-size: 30px;
 }
 
 button {
+  cursor: pointer;
   margin-top: 8px;
   background-color: #469944;
   color: white;
