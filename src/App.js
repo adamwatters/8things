@@ -26,19 +26,10 @@ const colorSet = ['#ff0000',
                   '#aeb9b9',
                   ]
 
-const lightenColor = (color, percent) => {
-    const num = parseInt(color,16)
-    const amt = Math.round(2.55 * percent)
-    const R = (num >> 16) + amt
-    const B = (num >> 8 & 0x00FF) + amt
-    const G = (num & 0x0000FF) + amt;
-    return (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (B<255?B<1?0:B:255)*0x100 + (G<255?G<1?0:G:255)).toString(16).slice(1);
-};
-
 class App extends Component {
 
   state = {
-    eightThings: ['love','art','fitness','language','health','yoga','cooking','programming'],
+    eightThings: ['','','','','','','',''],
     colors: colorSet.slice(0,8),
     step: 0,
     scores: [1, 1, 1, 1, 1, 1, 1, 1],
@@ -58,7 +49,7 @@ class App extends Component {
   }
 
   render() {
-    const { eightThings, step, activeThing, scores, openColorPicker, colors } = this.state;
+    const { eightThings, step, scores, openColorPicker, colors } = this.state;
     // each axis has an angle
     return (
       <div className="App">
@@ -128,7 +119,7 @@ class App extends Component {
                       const x = 90 + 80 * Math.cos(2 * Math.PI * i / 8);
                       const y = 90 + 80 * Math.sin(2 * Math.PI * i / 8);
                       return (
-                        <g onMouseEnter={() => this.setState({activeThing: i})} onMouseLeave={() => this.setState({activeThing: null})} key={i}>
+                        <g key={i}>
                           <line x1="90" y1="90" x2={x} y2={y} strokeWidth="1" stroke="grey"></line>
                           {[1, 2, 3, 4, 5, 6, 7, 8].map((number, index) => {
                             const match = number === scores[i];
