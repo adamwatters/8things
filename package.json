@@ -2,6 +2,7 @@
   "name": "my-app",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://adamwatters.github.io/8thing",
   "dependencies": {
     "huebee": "^1.0.1",
     "react": "^16.0.0",
