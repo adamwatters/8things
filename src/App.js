@@ -35,9 +35,6 @@ class App extends Component {
     firebase.initializeApp(config);
     this.auth = firebase.auth();
     this.provider = new firebase.auth.FacebookAuthProvider();
-    this.provider.setCustomParameters({
-      'display': 'popup'
-    });
   }
 
   componentDidMount() {
