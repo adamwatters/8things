@@ -1,37 +1,25 @@
 import React, { Component } from 'react';
 import './App.css';
-import './graph.css';
-import { GithubPicker } from 'react-color'
-
-const colorSet = ['#ff0000',
-                  '#ff6c00',
-                  '#ffa100',
-                  '#ffd100',
-                  '#6be1a7',
-                  '#00ffff',
-                  '#3bbedf',
-                  '#3e80bf',
-                  '#2f44a0',
-                  '#d391b9',
-                  '#ffc0cb',
-                  '#228b22',
-                  '#3fa750',
-                  '#56c37b',
-                  '#ffff00',
-                  '#7fffd4',
-                  '#000000',
-                  '#383b3b',
-                  '#707777',
-                  '#f0ffff',
-                  '#aeb9b9',
-                  ]
+import * as firebase from 'firebase/app';
+import 'firebase/auth';
+import COLORS from './COLORS.js'
+import InputsPage from './InputsPage.js'
+import GraphPage from './GraphPage.js'
+import LoginPage from './LoginPage.js'
+import SignupPage from './SignupPage.js'
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Link,
+  Redirect,
+} from 'react-router-dom'
 
 class App extends Component {
 
   state = {
     eightThings: ['','','','','','','',''],
-    colors: colorSet.slice(0,8),
-    step: 0,
+    colors: COLORS.slice(0,8),
     scores: [1, 1, 1, 1, 1, 1, 1, 1],
     openColorPicker: null,
     activeThing: null,
@@ -39,7 +27,27 @@ class App extends Component {
 
   constructor() {
     super();
-    this.inputs = [];
+    var config = {
+      apiKey: "AIzaSyB5jm_5ICfGHHTSQ3abCBPPcQMOPfmCQZI",
+      authDomain: "eight-things.firebaseapp.com",
+      projectId: "eight-things",
+    };
+    firebase.initializeApp(config);
+    this.auth = firebase.auth();
+    this.provider = new firebase.auth.FacebookAuthProvider();
+    this.provider.setCustomParameters({
+      'display': 'popup'
+    });
+  }
+
+  componentDidMount() {
+    this.auth.getRedirectResult().then((result) => {
+      console.log(result)
+      const user = result.user;
+      if (user) {
+        this.setState({user: user})
+      }
+    })
   }
 
   allValid() {
@@ -48,111 +56,54 @@ class App extends Component {
     })
   }
 
+  globalSetState = (state) => {
+    this.setState(state)
+  }
+
   render() {
-    const { eightThings, step, scores, openColorPicker, colors } = this.state;
-    // each axis has an angle
+    const allValid = this.allValid();
+    const commonProps = {
+      globalSetState: this.globalSetState,
+      auth: this.auth,
+      firebase: firebase,
+    }
+    console.log(this.state.user)
+    const {user} = this.state;
     return (
-      <div className="App">
-        <header className="App-header">
-          <h1 className="App-title">Eight Things</h1>
-        </header>
-        <section className="App-body">
-          { (step === 0) && (
-            <div className="step-one">
-              <p className="App-title" >What eight things do you want to focus on in your life?</p>
-              <ul className='category-inputs'>
-              {
-                eightThings.map((thing, i) => {
-                  const inputStyle = {
-                    outlineColor: colors[i],
-                  }
-                  const buttonStyle= {
-                    backgroundColor: colors[i],
-                    borderColor: colors[i],
-                    outlineColor: colors[i],
-                  }
-                  return (
-                    <li className='category-input' key={i}>
-                      <input style={inputStyle} ref={el => this.inputs[i] = el} onFocus={()=>this.setState({openColorPicker:null})} value={thing} placeholder={i + 1} onChange={(e) => {
-                        this.setState({
-                          eightThings: [...eightThings.slice(0, i), e.target.value, ...eightThings.slice(i + 1)]
-                        })}}/>
-                      <button style={buttonStyle} className='color-button' onClick={() => {
-                        this.setState({openColorPicker: i === openColorPicker ? null : i })}
-                      }>
-                      </button>
-                      {i === openColorPicker && (
-                        <span className='color-picker-container'>
-                          <GithubPicker width={188} triangle={'top-right'} onChangeComplete={(color)=> {
-                            this.setState({
-                              colors: [...colors.slice(0, i), color.hex, ...colors.slice(i + 1)],
-                              openColorPicker: null,
-                            })
-                          }} colors={colorSet} />
-                        </span>
-                      )}
-                    </li>
-                  )
-                })
-              }
-              </ul>
-              { this.allValid() && <button onClick={() => {this.setState({step: 1})}}>Start Tracking <span>🙌</span></button> }
-            </div>
-          )}
-          { (step === 1) && (
-            <div className="step-two">
-              <div className="left">
-                <p className="App-title" >How did you do today?</p>
-                <svg viewBox="0 0 180 180">
-                  <path d={
-                    scores.map((score, i) => {
-                      const x = 90 + (score * 10) * Math.cos(2 * Math.PI * i / 8);
-                      const y = 90 + (score * 10) * Math.sin(2 * Math.PI * i / 8);
-                      if (i === 0) {
-                        return `M ${x} ${y}`
-                      }
-                      return `L ${x} ${y}`
-                    }).join(' ')
-                  }/>
-                  {
-                    eightThings.map((thing, i) => {
-                      const x = 90 + 80 * Math.cos(2 * Math.PI * i / 8);
-                      const y = 90 + 80 * Math.sin(2 * Math.PI * i / 8);
-                      return (
-                        <g key={i}>
-                          <line x1="90" y1="90" x2={x} y2={y} strokeWidth="1" stroke="grey"></line>
-                          {[1, 2, 3, 4, 5, 6, 7, 8].map((number, index) => {
-                            const match = number === scores[i];
-                            const withinScore = scores[i] && number <= scores[i];
-                            const x = 90 + (number * 10) * Math.cos(2 * Math.PI * i / 8);
-                            const y = 90 + (number * 10) * Math.sin(2 * Math.PI * i / 8);
-                            return (
-                              <g key={index}>
-                                { match && <line x1="90" y1="90" x2={x} y2={y} strokeWidth="2" stroke={colors[i]}></line>}
-                                <circle onClick={()=>{
-                                  this.setState({scores: [...scores.slice(0, i), number, ...scores.slice(i + 1)]
-                                })}} cx={x} cy={y} r="2.5" stroke={colors[i]} strokeWidth="0" fill={withinScore ? colors[i] : 'grey'} />
-                              </g>
-                            )
-                          })}
-                        </g>
-                      )
-                    })
-                  }
-                  <circle cx='90' cy='90' fill='white' r="2.5" />
-                </svg>
-              </div>
-              <ul className="right">
-                {
-                  eightThings.map((thing, i) => {
-                    return <li key={thing} style={{color:colors[i]}}>{`${thing}: ${scores[i]}`}</li>
-                  })
+      <Router>
+        <div className="app">
+          <header className="app-header">
+            <Link className="header-title" to='/'>Eight Things</Link>
+            <span className="header-nav">
+              <a className="nav-link" to={'/login'} onClick={() => {
+                this.auth.signInWithRedirect(this.provider)
+              }}>{user ? 'User' : 'Log In'}</a>
+            </span>
+          </header>
+          <section className="app-body">
+            <Switch>
+              <Route path="/login" exact render={() => {
+                return <LoginPage {...this.state} {...commonProps} allValid={allValid}/>
+              }}/>
+              <Route path="/signup" exact render={() => {
+                return <SignupPage {...this.state} {...commonProps} allValid={allValid}/>
+              }}/>
+              <Route path="/1" exact render={() => {
+                return <InputsPage {...this.state} {...commonProps} allValid={allValid}/>
+              }}/>
+              <Route path="/2" exact render={() => {
+                if (allValid) {
+                  return <GraphPage {...this.state} {...commonProps}/>
                 }
-              </ul>
-            </div>
-          )}
+                return <Redirect to="/1"/>
+              }}/>
+              <Route path="/" render={() => {
+                return <Redirect to="/1"/>
+              }}/>
+            </Switch>
           </section>
-      </div>
+        </div>
+      </Router>
     )
   }
 }

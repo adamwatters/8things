@@ -72,7 +72,9 @@ input {
   font-size: 30px;
 }
 
-button {
+button, .submit {
+  text-decoration: none;
+  display: inline-block;
   cursor: pointer;
   margin-top: 8px;
   background-color: #469944;
@@ -82,5 +84,4 @@ button {
   border-radius: 3px;
   font-size: 20px;
   padding: 8px;
-  font-family: "Comic Sans MS";
 }
