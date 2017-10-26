@@ -1,13 +1,20 @@
 import React, { Component } from 'react';
 import './graph.css';
+import {format} from 'date-fns'
 
 class GraphPage extends Component {
 
+  constructor() {
+    super()
+    this.today = format(new Date(), 'MMM DD YYYY')
+  }
+
   render() {
-    const { eightThings, scores, colors, globalSetState } = this.props;
+    const { eightThings, scores, colors, globalSetState, user, database } = this.props;
     return (
       <div className="step-two">
         <div className="left">
+          <p className="App-title" >{this.today}</p>
           <p className="App-title" >How did you do today?</p>
           <svg viewBox="0 0 180 180">
             <path d={
@@ -51,9 +58,14 @@ class GraphPage extends Component {
         <ul className="right">
           {
             eightThings.map((thing, i) => {
-              return <li key={thing} style={{color:colors[i]}}>{`${thing}: ${scores[i]}`}</li>
+              return <li key={i} style={{color:colors[i]}}>{`${thing}: ${scores[i]}`}</li>
             })
           }
+          <button onClick={() => {
+            database.ref('users/' + user.uid).set({
+              username: scores,
+            });
+          }}>Save</button>
         </ul>
       </div>
     )

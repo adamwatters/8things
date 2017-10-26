@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
+import 'firebase/database';
 import COLORS from './COLORS.js'
 import InputsPage from './InputsPage.js'
 import GraphPage from './GraphPage.js'
@@ -18,7 +19,7 @@ import {
 class App extends Component {
 
   state = {
-    eightThings: ['','','','','','','',''],
+    eightThings: ['s','s','s','s','s','s','s','s'],
     colors: COLORS.slice(0,8),
     scores: [1, 1, 1, 1, 1, 1, 1, 1],
     openColorPicker: null,
@@ -31,10 +32,13 @@ class App extends Component {
       apiKey: "AIzaSyB5jm_5ICfGHHTSQ3abCBPPcQMOPfmCQZI",
       authDomain: "eight-things.firebaseapp.com",
       projectId: "eight-things",
+      databaseURL: "https://eight-things.firebaseio.com/",
     };
     firebase.initializeApp(config);
     this.auth = firebase.auth();
-    this.provider = new firebase.auth.FacebookAuthProvider();
+    this.database = firebase.database();
+    // this.provider = new firebase.auth.FacebookAuthProvider();
+    this.provider = new firebase.auth.GoogleAuthProvider();
   }
 
   componentDidMount() {
@@ -63,9 +67,8 @@ class App extends Component {
       globalSetState: this.globalSetState,
       auth: this.auth,
       firebase: firebase,
+      database: this.database,
     }
-    console.log(this.state.user)
-    const {user} = this.state;
     return (
       <Router>
         <div className="app">
@@ -74,7 +77,7 @@ class App extends Component {
             <span className="header-nav">
               <a className="nav-link" to={'/login'} onClick={() => {
                 this.auth.signInWithRedirect(this.provider)
-              }}>{user ? 'User' : 'Log In'}</a>
+              }}>{this.state.user ? 'User' : 'Log In'}</a>
             </span>
           </header>
           <section className="app-body">

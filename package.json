@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "https://adamwatters.github.io/8things",
   "dependencies": {
+    "date-fns": "^1.29.0",
     "firebase": "^4.6.0",
     "huebee": "^1.0.1",
     "react": "^16.0.0",
