@@ -43,7 +43,6 @@ class App extends Component {
 
   componentDidMount() {
     this.auth.getRedirectResult().then((result) => {
-      console.log(result)
       const user = result.user;
       if (user) {
         this.setState({user: user})
@@ -77,7 +76,7 @@ class App extends Component {
             <span className="header-nav">
               <a className="nav-link" to={'/login'} onClick={() => {
                 this.auth.signInWithRedirect(this.provider)
-              }}>{this.state.user ? 'User' : 'Log In'}</a>
+              }}>{this.state.user ? `${user.displayName}` : 'Log In'}</a>
             </span>
           </header>
           <section className="app-body">
