@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
-import './App.css';
 import * as firebase from 'firebase/app';
+import 'firebase/firestore';
 import 'firebase/auth';
-import 'firebase/database';
 import COLORS from './COLORS.js'
-import InputsPage from './InputsPage.js'
-import GraphPage from './GraphPage.js'
-import LoginPage from './LoginPage.js'
+import LandingPage from './LandingPage.js'
 import SignupPage from './SignupPage.js'
+import LoginPage from './LoginPage.js'
+import InputsPage from './InputsPage.js'
+import UserPage from './UserPage.js'
+import GraphPage from './GraphPage.js'
 import {
   BrowserRouter as Router,
   Route,
@@ -19,7 +20,7 @@ import {
 class App extends Component {
 
   state = {
-    eightThings: ['s','s','s','s','s','s','s','s'],
+    eightThings: ['','','','','','','',''],
     colors: COLORS.slice(0,8),
     scores: [1, 1, 1, 1, 1, 1, 1, 1],
     openColorPicker: null,
@@ -28,6 +29,7 @@ class App extends Component {
 
   constructor() {
     super();
+    console.log(firebase.UserInfo)
     var config = {
       apiKey: "AIzaSyB5jm_5ICfGHHTSQ3abCBPPcQMOPfmCQZI",
       authDomain: "eight-things.firebaseapp.com",
@@ -36,9 +38,15 @@ class App extends Component {
     };
     firebase.initializeApp(config);
     this.auth = firebase.auth();
-    this.database = firebase.database();
-    // this.provider = new firebase.auth.FacebookAuthProvider();
-    this.provider = new firebase.auth.GoogleAuthProvider();
+    this.database = firebase.firestore();
+    this.fbookProvider = new firebase.auth.FacebookAuthProvider();
+    this.googleProvider = new firebase.auth.GoogleAuthProvider();
+    this.auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+    this.auth.onAuthStateChanged(user => {
+      if (user && !this.state.user) {
+        this.setState({user: user});
+      }
+    });
   }
 
   componentDidMount() {
@@ -48,6 +56,12 @@ class App extends Component {
         this.setState({user: user})
       }
     })
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    if (!this.state.user && nextState.user) {
+      this.routerComponent.history.push('/1')
+    }
   }
 
   allValid() {
@@ -62,42 +76,53 @@ class App extends Component {
 
   render() {
     const allValid = this.allValid();
+    const {user} = this.state;
     const commonProps = {
       globalSetState: this.globalSetState,
       auth: this.auth,
       firebase: firebase,
       database: this.database,
+      user: user,
     }
     return (
-      <Router>
+      <Router ref={component => this.routerComponent = component}>
         <div className="app">
           <header className="app-header">
             <Link className="header-title" to='/'>Eight Things</Link>
             <span className="header-nav">
-              <a className="nav-link" to={'/login'} onClick={() => {
-                this.auth.signInWithRedirect(this.provider)
-              }}>{this.state.user ? `${user.displayName}` : 'Log In'}</a>
+              {user ? (
+                  <Link className="header-title" to='/user'>{user.displayName || user.email}</Link>
+                ) : (
+                  <a className="nav-link" to={'/login'} onClick={this.signIn}>Sign In</a>
+                )
+              }
             </span>
           </header>
           <section className="app-body">
             <Switch>
-              <Route path="/login" exact render={() => {
-                return <LoginPage {...this.state} {...commonProps} allValid={allValid}/>
+              <Route path="/" exact render={(routerProps) => {
+                return <LandingPage {...this.state} {...commonProps} {...routerProps} />
               }}/>
-              <Route path="/signup" exact render={() => {
-                return <SignupPage {...this.state} {...commonProps} allValid={allValid}/>
+              <Route path="/user" exact render={(routerProps) => {
+                return <UserPage {...this.state} {...commonProps} {...routerProps} />
               }}/>
-              <Route path="/1" exact render={() => {
-                return <InputsPage {...this.state} {...commonProps} allValid={allValid}/>
+              <Route path="/signup" exact render={(routerProps) => {
+                return <SignupPage {...this.state} {...commonProps} {...routerProps} />
               }}/>
-              <Route path="/2" exact render={() => {
+              <Route path="/login" exact render={(routerProps) => {
+                return <LoginPage {...this.state} {...commonProps} {...routerProps} />
+              }}/>
+              <Route path="/setup" exact render={(routerProps) => {
+                return <InputsPage {...this.state} {...commonProps} {...routerProps} allValid={allValid}/>
+              }}/>
+              <Route path="/track" exact render={(routerProps) => {
                 if (allValid) {
-                  return <GraphPage {...this.state} {...commonProps}/>
+                  return <GraphPage {...this.state} {...commonProps} {...routerProps}/>
                 }
                 return <Redirect to="/1"/>
               }}/>
               <Route path="/" render={() => {
-                return <Redirect to="/1"/>
+                return <Redirect to="/"/>
               }}/>
             </Switch>
           </section>

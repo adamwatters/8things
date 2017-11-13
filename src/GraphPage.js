@@ -41,7 +41,7 @@ class GraphPage extends Component {
                       const y = 90 + (number * 10) * Math.sin(2 * Math.PI * i / 8);
                       return (
                         <g key={index}>
-                          { match && <line x1="90" y1="90" x2={x} y2={y} strokeWidth="2" stroke={colors[i]}></line>}
+                          { match && <line style={{pointerEvents: 'none'}}x1="90" y1="90" x2={x} y2={y} strokeWidth="2" stroke={colors[i]}></line>}
                           <circle onClick={()=>{
                             globalSetState({scores: [...scores.slice(0, i), number, ...scores.slice(i + 1)]
                           })}} cx={x} cy={y} r="2.5" stroke={colors[i]} strokeWidth="0" fill={withinScore ? colors[i] : 'grey'} />
@@ -61,11 +61,14 @@ class GraphPage extends Component {
               return <li key={i} style={{color:colors[i]}}>{`${thing}: ${scores[i]}`}</li>
             })
           }
-          <button onClick={() => {
-            database.ref('users/' + user.uid).set({
-              username: scores,
-            });
-          }}>Save</button>
+          {
+            <button onClick={() => {
+              database.collection('scores').add({
+                user: user.uid,
+                day: new Date(),
+              });
+            }}>Save</button>
+          }
         </ul>
       </div>
     )

@@ -1,0 +1,14 @@
+.signup-buttons {
+  display: flex;
+  flex-direction: column;
+  max-width: 500px;
+  margin: 0 auto; }
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  max-width: 500px;
+  margin: 0 auto; }
+
+.divider {
+  padding: 30px; }

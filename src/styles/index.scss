@@ -1,3 +1,8 @@
+@import 'normalize.scss';
+@import 'app.scss';
+@import 'landing.scss';
+@import 'signup.scss';
+
 * {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -36,6 +41,10 @@ input {
   border: 1px solid grey;
 }
 
+.description {
+  padding: 30px;
+}
+
 .color-button {
   position: absolute;
   right: 10px;
@@ -72,7 +81,7 @@ input {
   font-size: 30px;
 }
 
-button, .submit {
+button, .button, .submit {
   text-decoration: none;
   display: inline-block;
   cursor: pointer;

@@ -1,0 +1,14 @@
+.container {
+  display: flex;
+  justify-content: center;
+}
+
+.signup {
+  width: 50%;
+  flex: 0 0 auto;
+}
+
+.login {
+  width: 50%;
+  flex: 0 0 auto;
+}

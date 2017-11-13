@@ -55,7 +55,7 @@ class InputsPage extends Component {
           })
         }
         </ul>
-        { allValid && <Link className='submit' to='/2'>Start Tracking <span>🙌</span></Link> }
+        { allValid && <Link className='submit' to='/track'>Start Tracking <span>🙌</span></Link> }
       </div>
     )
   }
