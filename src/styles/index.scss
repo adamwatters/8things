@@ -1,6 +1,7 @@
 @import 'normalize.scss';
 @import 'app.scss';
 @import 'landing.scss';
+@import 'login.scss';
 @import 'signup.scss';
 
 * {
@@ -81,7 +82,11 @@ input {
   font-size: 30px;
 }
 
-button, .button, .submit {
+button, .button {
+  &.button--inactive {
+    pointer-events: none;
+    opacity: .7;
+  }
   text-decoration: none;
   display: inline-block;
   cursor: pointer;

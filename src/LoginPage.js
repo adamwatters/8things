@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom'
 
 class LoginPage extends Component {
 
@@ -38,7 +39,7 @@ class LoginPage extends Component {
   render() {
     return (
       <div>
-        <div className='description'>Login</div>
+        <div className='description'>Log In</div>
         <div>
           <div className='signup-buttons'>
             <button onClick={this.facebookLogin}>Facebook</button>
@@ -48,7 +49,8 @@ class LoginPage extends Component {
           <form className='signup-form'>
             <input type="text" placeholder='email' onChange={this.onChange('email')} value={this.state.email}/>
             <input type="text" placeholder='password' onChange={this.onChange('password')} value={this.state.password}/>
-            <button onClick={this.submit}>Login</button>
+            <button onClick={this.submit}>Log In</button>
+            <span className='signup-link'><Link to={'/signup'}>New here? Sign up to get started.</Link></span>
           </form>
         </div>
       </div>

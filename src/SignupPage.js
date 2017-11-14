@@ -19,7 +19,6 @@ class SignupPage extends Component {
   submit = () => {
     const {email, password, passwordConfirmation} = this.state;
     if (email && password && (password === passwordConfirmation)) {
-      console.log('creating a user')
       this.props.auth.createUserWithEmailAndPassword(email, password).catch(function(error) {
         console.log('code')
         console.log(error.code)

@@ -425,6 +425,12 @@ template {
   width: 50%;
   flex: 0 0 auto; }
 
+.signup-link {
+  margin-top: 12px; }
+  .signup-link a {
+    text-decoration: none;
+    color: grey; }
+
 .signup-buttons {
   display: flex;
   flex-direction: column;
@@ -506,7 +512,7 @@ input {
   line-height: 35px;
   font-size: 30px; }
 
-button, .button, .submit {
+button, .button {
   text-decoration: none;
   display: inline-block;
   cursor: pointer;
@@ -518,3 +524,6 @@ button, .button, .submit {
   border-radius: 3px;
   font-size: 20px;
   padding: 8px; }
+  button.button--inactive, .button.button--inactive {
+    pointer-events: none;
+    opacity: .7; }

@@ -15,7 +15,7 @@ class InputsPage extends Component {
 
   render() {
     const { openColorPicker } = this.state;
-    const { eightThings, scores, colors, allValid, globalSetState } = this.props;
+    const { eightThings, scores, colors, allValid, globalSetState, user, database } = this.props;
     return (
       <div className="step-one">
         <p className="App-title" >What eight things do you want to focus on in your life?</p>
@@ -55,7 +55,16 @@ class InputsPage extends Component {
           })
         }
         </ul>
-        { allValid && <Link className='submit' to='/track'>Start Tracking <span>🙌</span></Link> }
+        <Link onClick={() => {
+          database.collection('categories').add({
+            user: user.uid,
+            things: eightThings,
+          }).then(ref => {
+            console.log(ref)
+          }).catch(error => {
+            console.log('error: ', error)
+          })
+        }} className={`button${allValid ? '' : ' button--inactive'}`} to='/track'>Start Tracking <span>🙌</span></Link>
       </div>
     )
   }

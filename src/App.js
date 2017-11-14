@@ -42,25 +42,36 @@ class App extends Component {
     this.fbookProvider = new firebase.auth.FacebookAuthProvider();
     this.googleProvider = new firebase.auth.GoogleAuthProvider();
     this.auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+
+    this.auth.getRedirectResult().then((result) => {
+      const user = result.user;
+      if (user) {
+        this.setState({user: user});
+        console.log(user.uid)
+        this.database.collection('categories').where("user", "==", user.uid).get().then(c => {
+          console.log(c.data())
+        })
+      }
+    })
+
     this.auth.onAuthStateChanged(user => {
       if (user && !this.state.user) {
         this.setState({user: user});
+        console.log(user.uid)
+        this.database.collection('categories').where("user", "==", user.uid).get().then(c => {
+          if (!c.empty) {
+            console.log(c.docs[0].data())
+          }
+        })
+      } else if (!user && this.state.user) {
+        this.setState({user: null, things: null});
       }
     });
   }
 
-  componentDidMount() {
-    this.auth.getRedirectResult().then((result) => {
-      const user = result.user;
-      if (user) {
-        this.setState({user: user})
-      }
-    })
-  }
-
   componentWillUpdate(nextProps, nextState) {
     if (!this.state.user && nextState.user) {
-      this.routerComponent.history.push('/1')
+      this.routerComponent.history.push('/setup')
     }
   }
 
@@ -93,7 +104,7 @@ class App extends Component {
               {user ? (
                   <Link className="header-title" to='/user'>{user.displayName || user.email}</Link>
                 ) : (
-                  <a className="nav-link" to={'/login'} onClick={this.signIn}>Sign In</a>
+                  <Link className="nav-link" to={'/login'} onClick={this.signIn}>Log In</Link>
                 )
               }
             </span>
