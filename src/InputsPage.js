@@ -60,9 +60,8 @@ class InputsPage extends Component {
             user: user.uid,
             things: eightThings,
           }).then(ref => {
-            console.log(ref)
-          }).catch(error => {
-            console.log('error: ', error)
+            globalSetState({savedEightThings: eightThings})
+            this.props.history.push('/track')
           })
         }} className={`button${allValid ? '' : ' button--inactive'}`} to='/track'>Start Tracking <span>🙌</span></Link>
       </div>

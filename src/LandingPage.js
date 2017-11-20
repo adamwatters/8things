@@ -8,8 +8,12 @@ class LandingPage extends Component {
     super();
   }
 
+  state = {
+    dayOffset: 0,
+  }
+
   render() {
-    const {user, todayScores, savedEightThings, colors} = this.props;
+    const {user, todayScores, allScores, savedEightThings, colors} = this.props;
     return (
       <div>
         <div className='description'>Eight Things is a daily tracking app to help you allocate your limitied time, energy, and focus.</div>
@@ -17,7 +21,7 @@ class LandingPage extends Component {
           {!user && <div style={{margin: '10px'}}><Link className='button' to='/signup'>Signup</Link></div>}
           {!user && <div style={{margin: '10px'}}><Link className='button' to='/login'>Login</Link></div>}
           {user && !savedEightThings && <div style={{margin: '10px'}}><Link className='button' to='/setup'>Start Tracking</Link></div>}
-          {user && !todayScores && <div style={{margin: '10px'}}><Link className='button' to='/setup'>Record Today</Link></div>}
+          {user && !todayScores && <div style={{margin: '10px'}}><Link className='button' to='/track'>Record Today</Link></div>}
           {user && savedEightThings && todayScores && (
             <div>
             <div>Good job! Check in again tomorrow and keep your streak going.</div>
@@ -66,8 +70,18 @@ class LandingPage extends Component {
                     return <li key={i} style={{color:colors[i]}}>{`${thing}: ${todayScores[i]}`}</li>
                   })
                 }
-                <button>Previous Day</button>
-                <button>Next Day</button>
+                {allScores && allScores.length > 1 && allScores.length > this.state.dayOffset && (
+                  <button
+                    onClick={() => this.setState({dayOffset: this.state.dayOffset + 1})}>
+                    Previous Day
+                  </button>
+                )}
+                {this.state.dayOffset > 0 && (
+                  <button
+                    onClick={() => this.setState({dayOffset: this.state.dayOffset - 1})}>
+                    Next Day
+                  </button>
+                )}
               </ul>
             </div>
             </div>

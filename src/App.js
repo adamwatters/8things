@@ -25,6 +25,7 @@ class App extends Component {
     colors: COLORS.slice(0,8),
     scores: [1, 1, 1, 1, 1, 1, 1, 1],
     savedEightThings: null,
+    allScores: null,
     todayScores: null,
     openColorPicker: null,
     activeThing: null,
@@ -55,10 +56,24 @@ class App extends Component {
           }
         })
         this.database.collection('scores').where("user", "==", user.uid).get().then(c => {
-          if (!c.empty && moment().isSame(c.docs[0].data().day, 'day')) {
-            this.setState({todayScores: c.docs[0].data().scores});
+          if (!c.empty) {
+            if (moment().isSame(c.docs[0].data().day, 'day')) {
+              this.setState({
+                todayScores: c.docs[0].data().scores,
+              });
+            }
           }
         })
+        this.unsubscribeToScores = this.database.collection('scores').where("user", "==", user.uid).onSnapshot(querySnapshot => {
+          const allScores = [];
+          querySnapshot.forEach((doc) => {
+            allScores.push({
+              date: doc.data().date,
+              scores: doc.data().scores,
+            })
+          })
+          this.setState({allScores})
+        });
       }
     })
 
@@ -71,11 +86,26 @@ class App extends Component {
           }
         })
         this.database.collection('scores').where("user", "==", user.uid).get().then(c => {
-          if (!c.empty && moment().isSame(c.docs[0].data().day, 'day')) {
-            this.setState({todayScores: c.docs[0].data().scores});
+          if (!c.empty) {
+            if (moment().isSame(c.docs[0].data().day, 'day')) {
+              this.setState({
+                todayScores: c.docs[0].data().scores,
+              });
+            }
           }
         })
+        this.unsubscribeToScores = this.database.collection('scores').where("user", "==", user.uid).onSnapshot(querySnapshot => {
+          const allScores = [];
+          querySnapshot.forEach((doc) => {
+            allScores.push({
+              date: doc.data().date,
+              scores: doc.data().scores,
+            })
+          })
+          this.setState({allScores})
+        });
       } else if (!user && this.state.user) {
+        this.unsubscribeToScores();
         this.setState({user: null, things: null});
       }
     });
@@ -139,6 +169,7 @@ class App extends Component {
                 if (!user) {
                   return <LoginPage {...this.state} {...commonProps} {...routerProps} />
                 }
+                return <Redirect to="/"/>
               }}/>
               <Route path="/setup" exact render={(routerProps) => {
                 if (!savedEightThings) {
