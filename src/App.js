@@ -9,6 +9,7 @@ import LoginPage from './LoginPage.js'
 import InputsPage from './InputsPage.js'
 import UserPage from './UserPage.js'
 import GraphPage from './GraphPage.js'
+import moment from 'moment'
 import {
   BrowserRouter as Router,
   Route,
@@ -23,13 +24,14 @@ class App extends Component {
     eightThings: ['','','','','','','',''],
     colors: COLORS.slice(0,8),
     scores: [1, 1, 1, 1, 1, 1, 1, 1],
+    savedEightThings: null,
+    todayScores: null,
     openColorPicker: null,
     activeThing: null,
   }
 
   constructor() {
     super();
-    console.log(firebase.UserInfo)
     var config = {
       apiKey: "AIzaSyB5jm_5ICfGHHTSQ3abCBPPcQMOPfmCQZI",
       authDomain: "eight-things.firebaseapp.com",
@@ -47,9 +49,15 @@ class App extends Component {
       const user = result.user;
       if (user) {
         this.setState({user: user});
-        console.log(user.uid)
         this.database.collection('categories').where("user", "==", user.uid).get().then(c => {
-          console.log(c.data())
+          if (!c.empty) {
+            this.setState({savedEightThings: c.docs[0].data().things});
+          }
+        })
+        this.database.collection('scores').where("user", "==", user.uid).get().then(c => {
+          if (!c.empty && moment().isSame(c.docs[0].data().day, 'day')) {
+            this.setState({todayScores: c.docs[0].data().scores});
+          }
         })
       }
     })
@@ -57,10 +65,14 @@ class App extends Component {
     this.auth.onAuthStateChanged(user => {
       if (user && !this.state.user) {
         this.setState({user: user});
-        console.log(user.uid)
         this.database.collection('categories').where("user", "==", user.uid).get().then(c => {
           if (!c.empty) {
-            console.log(c.docs[0].data())
+            this.setState({savedEightThings: c.docs[0].data().things});
+          }
+        })
+        this.database.collection('scores').where("user", "==", user.uid).get().then(c => {
+          if (!c.empty && moment().isSame(c.docs[0].data().day, 'day')) {
+            this.setState({todayScores: c.docs[0].data().scores});
           }
         })
       } else if (!user && this.state.user) {
@@ -87,7 +99,7 @@ class App extends Component {
 
   render() {
     const allValid = this.allValid();
-    const {user} = this.state;
+    const {user, todayScores, savedEightThings} = this.state;
     const commonProps = {
       globalSetState: this.globalSetState,
       auth: this.auth,
@@ -118,19 +130,27 @@ class App extends Component {
                 return <UserPage {...this.state} {...commonProps} {...routerProps} />
               }}/>
               <Route path="/signup" exact render={(routerProps) => {
-                return <SignupPage {...this.state} {...commonProps} {...routerProps} />
+                if (!user) {
+                  return <SignupPage {...this.state} {...commonProps} {...routerProps} />
+                }
+                return <Redirect to="/"/>
               }}/>
               <Route path="/login" exact render={(routerProps) => {
-                return <LoginPage {...this.state} {...commonProps} {...routerProps} />
+                if (!user) {
+                  return <LoginPage {...this.state} {...commonProps} {...routerProps} />
+                }
               }}/>
               <Route path="/setup" exact render={(routerProps) => {
-                return <InputsPage {...this.state} {...commonProps} {...routerProps} allValid={allValid}/>
+                if (!savedEightThings) {
+                  return <InputsPage {...this.state} {...commonProps} {...routerProps} allValid={allValid}/>
+                }
+                return <Redirect to="/"/>
               }}/>
               <Route path="/track" exact render={(routerProps) => {
-                if (allValid) {
+                if (savedEightThings && !todayScores) {
                   return <GraphPage {...this.state} {...commonProps} {...routerProps}/>
                 }
-                return <Redirect to="/1"/>
+                return <Redirect to="/"/>
               }}/>
               <Route path="/" render={() => {
                 return <Redirect to="/"/>

@@ -425,6 +425,9 @@ template {
   width: 50%;
   flex: 0 0 auto; }
 
+.landing svg {
+  pointer-events: none; }
+
 .signup-link {
   margin-top: 12px; }
   .signup-link a {

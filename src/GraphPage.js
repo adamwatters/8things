@@ -10,7 +10,7 @@ class GraphPage extends Component {
   }
 
   render() {
-    const { eightThings, scores, colors, globalSetState, user, database } = this.props;
+    const { savedEightThings, scores, colors, globalSetState, user, database } = this.props;
     return (
       <div className="step-two">
         <div className="left">
@@ -28,7 +28,7 @@ class GraphPage extends Component {
               }).join(' ')
             }/>
             {
-              eightThings.map((thing, i) => {
+              savedEightThings.map((thing, i) => {
                 const x = 90 + 80 * Math.cos(2 * Math.PI * i / 8);
                 const y = 90 + 80 * Math.sin(2 * Math.PI * i / 8);
                 return (
@@ -57,7 +57,7 @@ class GraphPage extends Component {
         </div>
         <ul className="right">
           {
-            eightThings.map((thing, i) => {
+            savedEightThings.map((thing, i) => {
               return <li key={i} style={{color:colors[i]}}>{`${thing}: ${scores[i]}`}</li>
             })
           }
@@ -66,7 +66,10 @@ class GraphPage extends Component {
               database.collection('scores').add({
                 user: user.uid,
                 day: new Date(),
+                scores: scores,
               });
+              globalSetState({todayScores: scores})
+              this.props.history.push('/')
             }}>Save</button>
           }
         </ul>
