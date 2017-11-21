@@ -3,6 +3,7 @@
 @import 'landing.scss';
 @import 'login.scss';
 @import 'signup.scss';
+@import 'graph.scss';
 
 * {
   -webkit-box-sizing: border-box;
@@ -61,6 +62,8 @@ input {
 .step-two {
   display: flex;
   justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
 .left {

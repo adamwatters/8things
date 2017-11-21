@@ -4,4 +4,5 @@
 
 ###todos
 - automate ^^ string replace for deploy
+- fetch all scores to show previous and next
 

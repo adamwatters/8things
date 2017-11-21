@@ -1,0 +1,11 @@
+.graph {
+  max-width: 100vw;
+  max-height: 100vw;
+  text {
+    font-size: 12px;
+    pointer-events: none;
+  }
+  .shape {
+    opacity: .2;
+  }
+}

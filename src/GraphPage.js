@@ -6,21 +6,19 @@ class GraphPage extends Component {
 
   constructor() {
     super()
-    this.today = format(new Date(), 'MMM DD YYYY')
+    this.today = format(new Date(), 'dddd')
   }
 
   render() {
     const { savedEightThings, scores, colors, globalSetState, user, database } = this.props;
     return (
       <div className="step-two">
-        <div className="left">
-          <p className="App-title" >{this.today}</p>
-          <p className="App-title" >How did you do today?</p>
-          <svg viewBox="0 0 180 180">
-            <path d={
+          <p className="App-title" >{`How was your ${this.today}`}</p>
+          <svg className="graph" viewBox="0 0 200 200">
+            <path className="shape" d={
               scores.map((score, i) => {
-                const x = 90 + (score * 10) * Math.cos(2 * Math.PI * i / 8);
-                const y = 90 + (score * 10) * Math.sin(2 * Math.PI * i / 8);
+                const x = 100 + (score * 16) * Math.cos(2 * Math.PI * i / 8);
+                const y = 100 + (score * 16) * Math.sin(2 * Math.PI * i / 8);
                 if (i === 0) {
                   return `M ${x} ${y}`
                 }
@@ -29,40 +27,39 @@ class GraphPage extends Component {
             }/>
             {
               savedEightThings.map((thing, i) => {
-                const x = 90 + 80 * Math.cos(2 * Math.PI * i / 8);
-                const y = 90 + 80 * Math.sin(2 * Math.PI * i / 8);
+                const x = 100 + 80 * Math.cos(2 * Math.PI * i / 8);
+                const y = 100 + 80 * Math.sin(2 * Math.PI * i / 8);
+                const textOffsetX = i === 0 ? -10 : i === 4 ? 10 : 0;
+                const textOffsetY = i === 0 || i === 4 ? -6 : y <= 101 ? -3 : 10;
+                console.log(thing)
+                console.log(y)
+                const textX = 100 + + textOffsetX + 85 * Math.cos(2 * Math.PI * i / 8);
+                const textY = 100 + textOffsetY + 85 * Math.sin(2 * Math.PI * i / 8);
                 return (
                   <g key={i}>
-                    <line x1="90" y1="90" x2={x} y2={y} strokeWidth="1" stroke="grey"></line>
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map((number, index) => {
+                    <line x1="100" y1="100" x2={x} y2={y} strokeWidth="1" stroke="grey"></line>
+                    {[1, 2, 3, 4, 5].map((number, index) => {
                       const match = number === scores[i];
                       const withinScore = scores[i] && number <= scores[i];
-                      const x = 90 + (number * 10) * Math.cos(2 * Math.PI * i / 8);
-                      const y = 90 + (number * 10) * Math.sin(2 * Math.PI * i / 8);
+                      const x = 100 + (number * 16) * Math.cos(2 * Math.PI * i / 8);
+                      const y = 100 + (number * 16) * Math.sin(2 * Math.PI * i / 8);
                       return (
                         <g key={index}>
-                          { match && <line style={{pointerEvents: 'none'}}x1="90" y1="90" x2={x} y2={y} strokeWidth="2" stroke={colors[i]}></line>}
+                          { match && <line style={{pointerEvents: 'none'}}x1="100" y1="100" x2={x} y2={y} strokeWidth="2" stroke={colors[i]}></line>}
                           <circle onClick={()=>{
                             globalSetState({scores: [...scores.slice(0, i), number, ...scores.slice(i + 1)]
-                          })}} cx={x} cy={y} r="2.5" stroke={colors[i]} strokeWidth="0" fill={withinScore ? colors[i] : 'grey'} />
+                          })}} cx={x} cy={y} r="4" stroke={colors[i]} strokeWidth="0" fill={withinScore ? colors[i] : 'grey'} />
                         </g>
                       )
                     })}
+                    <text textAnchor="middle" x={textX} y={textY}>{thing}</text>
                   </g>
                 )
               })
             }
-            <circle cx='90' cy='90' fill='white' r="2.5" />
+            <circle cx='100' cy='100' fill='white' r="2.5" />
           </svg>
-        </div>
-        <ul className="right">
-          {
-            savedEightThings.map((thing, i) => {
-              return <li key={i} style={{color:colors[i]}}>{`${thing}: ${scores[i]}`}</li>
-            })
-          }
-          {
-            <button onClick={() => {
+          <button onClick={() => {
               database.collection('scores').add({
                 user: user.uid,
                 day: new Date(),
@@ -71,8 +68,6 @@ class GraphPage extends Component {
               globalSetState({todayScores: scores})
               this.props.history.push('/')
             }}>Save</button>
-          }
-        </ul>
       </div>
     )
   }
